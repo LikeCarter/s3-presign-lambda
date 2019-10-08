@@ -20,7 +20,7 @@ const s3 = new AWS.S3();
  *
  */
 exports.lambdaHandler = async (event, context) => {
-    if (event.body !== null && event.body !== undefined) {
+    if (event.body !== null && event.body !== "" && event.body !== undefined) {
         let body = JSON.parse(event.body);
         let name = body.name;
 
@@ -53,5 +53,12 @@ exports.lambdaHandler = async (event, context) => {
         }
 
         return response;
+    } else {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: "Malformed body.",
+            })
+        };
     }
 };
