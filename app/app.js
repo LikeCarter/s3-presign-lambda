@@ -3,7 +3,7 @@
 let response;
 
 const AWS = require("aws-sdk");
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({ signatureVersion: "v4", region: "us-east-1" });
 
 // presignedUrl expires in 1 day
 
@@ -40,11 +40,13 @@ exports.lambdaHandler = async (event, context) => {
             // const ret = await axios(url);
             response = {
                 statusCode: 200,
+                headers: {
+                    "Access-Control-Allow-Origin": "*" // Necessary to allow CORS
+                },
                 body: JSON.stringify({
                     message: "hello world",
                     presigned_put: put_url,
                     presigned_get: get_url
-                    // location: ret.data.trim()
                 })
             };
         } catch (err) {
@@ -56,8 +58,11 @@ exports.lambdaHandler = async (event, context) => {
     } else {
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*" // Necessary to allow CORS
+            },
             body: JSON.stringify({
-                message: "Malformed body.",
+                message: "Malformed body."
             })
         };
     }
