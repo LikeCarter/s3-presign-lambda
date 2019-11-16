@@ -7,6 +7,15 @@ const s3 = new AWS.S3({ signatureVersion: "v4", region: "us-east-1" });
 
 // presignedUrl expires in 1 day
 
+
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -26,14 +35,14 @@ exports.lambdaHandler = async (event, context) => {
 
         const put_url = s3.getSignedUrl("putObject", {
             Bucket: "docx-2adc98bd-1daf-482a-8834-82eaa638da74",
-            Key: name,
-            Expires: 60
+            Key: uuidv4() + "/" + name,
+            Expires: 300 // 5 minutes
         });
 
         const get_url = s3.getSignedUrl("getObject", {
             Bucket: "scrubbed-docx-2adc98bd-1daf-482a-8834-82eaa638da74",
-            Key: name,
-            Expires: 60
+            Key: uuidv4() + "/" + name,
+            Expires: 300
         });
 
         try {
